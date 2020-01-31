@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet"  href="css/bootstrap.min.css"/>
+    <link rel="stylesheet"  href="css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet"  href="estilo.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="jquery.min.js"></script>
+</head>
+
+<title>Agenda Para Contactos</title>
+
+
+<body onload = "LoadALL();">
+    <div class="container">
+        <div class="row" >
+            <div class="col col-sm-6" id="table"> 
+                
+                <center>
+                    <p>Agenda Para Contactos</p>
+                </center>
+                
+                <form method = "" id = "frmdata">
+
+                    <div class="input-group form-group">
+                        <span class="input-group-addon">Nombre:</span>
+                        <input id="Nombre"  class ="form-control">
+                    </div>
+
+                    <div class="input-group form-group">
+                        <span class="input-group-addon">Telefono:</span>
+                        <input id="Telefono"  class ="form-control">
+                    </div>
+
+                    <div>
+                        <button onclick="SaveContact();" type="button" class="btn btn-primary">Guardar Contacto</button>
+                        <button onclick="NuevoContacto();" type="button" class="btn btn-success">Nuevo Contacto</button>
+                    </div>
+                </form>             
+            </div >
+            <div class="col cols-sm-6 form-group">
+                <div class="row" id="datatable">
+                    <form>
+                <table class = "datatable table"    >
+                    <thead>
+                        <tr>
+                            <th>Nombre Del Contacto</th>
+                            <th>Telefono Del Contacto</th>
+                            <th>Opciones</th>
+                        </tr>                        
+                    </thead>
+                    <tbody id = "tbdestino"></tbody>                   
+                </table>
+            </form>
+                </div>
+         
+            </div>
+        </div>
+    </div>
+    <script>
+
+        var Contacts_In_Edition = null; 
+
+        var data = 
+        {
+            nombres:[],
+            telefonos:[]
+        }
+
+        function NuevoContacto()
+        {
+            window.location = window.location;
+        }
+
+        function Eliminar(index)
+        {
+            if(confirm("Quieres eliminar el contacto?"))
+            {
+                data.nombres.splice(index,1);
+                SaveAll();
+                ShowContacts();
+            }
+       }
+
+        function SaveContact()
+        {      
+            Nombre = $('#Nombre').val();
+            Telefono = $('#Telefono').val();
+            
+            veh = {"Nombre":Nombre,
+            "Telefono":Telefono
+            };
+
+
+            if(Contacts_In_Edition == null)
+            {
+                data.nombres.push(veh);
+            }
+            else
+            {
+                data.nombres[Contacts_In_Edition] = veh;
+                Contacts_In_Edition = null;
+            }            
+            SaveAll();
+            ShowContacts();
+        }             
+
+        function ShowContacts()
+        {
+            destiny = document.getElementById('tbdestino');
+            destiny.innerHTML = "";
+            for(x = 0; x < data.nombres.length; x++)
+            {
+                veh = data.nombres[x];
+                tr = document.createElement('tr');
+                for(key in veh)
+                {
+                    val = veh[key];
+                    td = document.createElement('td');
+                    td.innerHTML = val;
+                    tr.appendChild(td);
+                }
+                td = document.createElement('td');
+                btn = document.createElement('button');
+                btn.type = 'button';
+                btn.setAttribute('class' ,'btn btn-danger');
+                btn.setAttribute('onclick','Eliminar('+x+');');
+                btn.innerHTML = "Eliminar";
+                td.appendChild(btn);
+
+
+                btn = document.createElement('button');
+                btn.type='button';
+                btn.setAttribute('class','btn btn-warning');
+                btn.innerHTML = "Modificar";
+                btn.setAttribute('onclick','ModifyContacts('+x+');');
+                td.appendChild(btn);
+                tr.appendChild(td);
+
+                destiny.appendChild(tr);
+            }
+        }
+
+        function ModifyContacts(index)
+        {
+            Contacts_In_Edition = index;
+
+            veh = data.nombres[index];
+            for(key in veh)
+            {
+              $('#'+key).val(veh[key]);
+            } 
+        }
+   
+        function SaveAll()
+        {
+            localStorage.setItem('asgData',JSON.stringify(data));
+        }
+
+        function LoadALL()
+        {
+            tmp = localStorage.getItem('asgData');
+
+            if(tmp != null)
+            {
+                data = JSON.parse(tmp);
+            }
+            ShowContacts();
+        }
+    </script>
+</body>
+</html>
